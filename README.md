@@ -1,3 +1,17 @@
+Tech stack
+✅ Frontend (React/Next.js)
+✅ Backend (Python, FastAPI, Node.js)
+✅ AI Transcription (Whisper API - OpenAI)
+✅ Cloud Deployment (Vercel + Render + S3)
+✅ Integration Guide
+How it Works
+✅ Frontend → Sends audio file to FastAPI backend
+✅ Backend → Uploads file to AWS S3, then calls Whisper API
+✅ Whisper API → Transcribes audio & returns text
+✅ Frontend → Displays transcription to user
+
+
+
 ##Windows Local Development Setup - 12.7.2021 
 
 🛠 1️⃣ Install Prerequisites
@@ -88,6 +102,30 @@ sh
 Copy
 Edit
 npm install
+
+#Create a New package.json (If Missing)
+Open Command Prompt (not inside the venv):
+sh
+Copy
+Edit
+cd C:\Users\taaglyu1\Documents\git\sideproject\frontend
+Run this command to create a new package.json:
+sh
+Copy
+Edit
+npm init -y
+This will generate a basic package.json file.
+
+Open package.json and check if it contains this section:
+
+json
+Copy
+Edit
+"scripts": {
+  "dev": "next dev",
+  "build": "next build",
+  "start": "next start"
+}
 📌 Start the Frontend
 
 sh
