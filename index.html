@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audio Transcriber</title>
+</head>
+<body>
+    <h1>Audio to Text Transcription</h1>
+    <input type="file" id="fileInput" accept="audio/*">
+    <button onclick="uploadFile()">Upload</button>
+    <h2>Transcription:</h2>
+    <p id="transcription"></p>
+
+    <script>
+        function uploadFile() {
+            const fileInput = document.getElementById("fileInput");
+            if (!fileInput.files.length) {
+                alert("Please select a file first!");
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append("file", fileInput.files[0]);
+
+            fetch("https://audiotranscriber-skor.onrender.com/upload", {
+                method: "POST",
+                body: formData,
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById("transcription").innerText = data.transcription || "Failed to transcribe.";
+            })
+            .catch(error => {
+                console.error("Error uploading file:", error);
+                document.getElementById("transcription").innerText = "Error processing file.";
+            });
+        }
+    </script>
+</body>
+</html>
