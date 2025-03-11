@@ -1,44 +1,99 @@
-"use client";
-import { useState } from "react";
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audio Transcriber</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        input, button {
+            margin: 10px 0;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        #error {
+            color: red;
+        }
+        #transcription {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f5f5f5;
+            border-radius: 4px;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <h1>Audio Transcriber</h1>
+    <form id="uploadForm">
+        <input type="file" id="audioFile" accept="audio/*">
+        <button type="submit">Transcribe</button>
+    </form>
+    <div id="error"></div>
+    <div id="transcription"></div>
 
-export default function Home() {
-  const [file, setFile] = useState(null);
-  const [transcription, setTranscription] = useState("");
+    <script>
+        const form = document.getElementById('uploadForm');
+        const fileInput = document.getElementById('audioFile');
+        const button = form.querySelector('button');
+        const errorDiv = document.getElementById('error');
+        const transcriptionDiv = document.getElementById('transcription');
 
-  const handleFileChange = (event) => {
-    setFile(event.target.files[0]);
-  };
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const file = fileInput.files[0];
+            errorDiv.textContent = '';
+            transcriptionDiv.textContent = '';
 
-  const handleUpload = async () => {
-    if (!file) {
-      alert("Please select a file first!");
-      return;
-    }
+            if (!file) {
+                errorDiv.textContent = 'Please select an audio file';
+                return;
+            }
 
-    const formData = new FormData();
-    formData.append("file", file);
+            button.disabled = true;
+            button.textContent = 'Transcribing...';
 
-    try {
-          const response = await fetch("https://audiotranscriber-skor.onrender.com/upload", {
-        method: "POST",
-        body: formData,
-      });
+            const formData = new FormData();
+            formData.append('file', file);
 
-      const data = await response.json();
-      setTranscription(data.transcription || "Failed to transcribe.");
-    } catch (error) {
-      console.error("Error uploading file:", error);
-      setTranscription("Error processing file.");
-    }
-  };
+            try {
+                const response = await fetch('https://audiotranscriber-skor.onrender.com/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await response.json();
 
-  return (
-    <div style={{ textAlign: "center", padding: "50px" }}>
-      <h1>Audio to Text Transcription</h1>
-      <input type="file" accept="audio/*" onChange={handleFileChange} />
-      <button onClick={handleUpload} style={{ marginLeft: "10px" }}>Upload</button>
-      <h2>Transcription:</h2>
-      <p>{transcription}</p>
-    </div>
-  );
-}
+                if (data.error) {
+                    errorDiv.textContent = data.error;
+                } else {
+                    transcriptionDiv.textContent = data.transcription;
+                }
+            } catch (err) {
+                errorDiv.textContent = 'Error connecting to server';
+            } finally {
+                button.disabled = false;
+                button.textContent = 'Transcribe';
+            }
+        });
+    </script>
+</body>
+</html>
