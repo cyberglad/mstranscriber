@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login / Signup</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin: 50px;
+    }
+    input {
+      display: block;
+      margin: 10px auto;
+      padding: 10px;
+      width: 80%;
+      max-width: 300px;
+    }
+    button {
+      padding: 10px 20px;
+      margin: 10px;
+    }
+    .google-btn {
+      background-color: #4285F4;
+      color: white;
+      border: none;
+    }
+  </style>
+</head>
+<body>
+  <h2>Login or Sign Up</h2>
+  <form id="authForm">
+    <input type="email" id="email" placeholder="Email" required />
+    <input type="password" id="password" placeholder="Password" required />
+    <button type="submit">Login / Signup</button>
+  </form>
+
+  <hr />
+  <button class="google-btn" id="googleLogin">Continue with Google</button>
+
+  <script>
+    const form = document.getElementById('authForm');
+    const googleBtn = document.getElementById('googleLogin');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+
+      try {
+        const res = await fetch('https://audiotranscriber-skor.onrender.com/auth/email-login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password }),
+        });
+
+        const data = await res.json();
+        if (res.ok && data.token) {
+          localStorage.setItem('token', data.token);
+          window.location.href = 'index.html';
+        } else {
+          alert(data.message || 'Authentication failed');
+        }
+      } catch (err) {
+        console.error(err);
+        alert('Login failed');
+      }
+    });
+
+    googleBtn.addEventListener('click', () => {
+      window.location.href = 'https://audiotranscriber-skor.onrender.com/auth/google-login';
+    });
+  </script>
+</body>
+</html>
