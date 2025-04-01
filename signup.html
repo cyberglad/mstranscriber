@@ -20,28 +20,31 @@
 
   <script>
     document.getElementById('signupForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const email = document.getElementById('email').value;
-      const password = document.getElementById('password').value;
+  e.preventDefault();
+  const email = document.getElementById('email').value;
+  const password = document.getElementById('password').value;
 
-      try {
-        const res = await fetch('https://audiotranscriber-skor.onrender.com/auth/signup', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email, password }),
-        });
-
-        const data = await res.json();
-        if (res.ok) {
-          alert('Verification email sent. Please check your inbox.');
-          window.location.href = 'login.html';
-        } else {
-          alert(data.message || 'Signup failed');
-        }
-      } catch (err) {
-        alert('Signup error');
-      }
+  try {
+    const res = await fetch('https://audiotranscriber-skor.onrender.com/auth/signup', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password }),
     });
+
+    const data = await res.json();
+    console.log('Server Response:', data); // Debugging
+
+    if (!res.ok) {
+      throw new Error(data.error || data.message || 'Signup failed');
+    }
+
+    alert('Verification email sent. Please check your inbox.');
+    window.location.href = 'login.html';
+  } catch (err) {
+    console.error('Signup Error:', err);
+    alert(err.message || 'Signup error');
+  }
+});
   </script>
 </body>
 </html>
