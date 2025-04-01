@@ -99,7 +99,7 @@
 
             try {
                 console.log('Attempting signup with:', { name, email });
-                const response = await fetch('https://audiotranscriber-skor.onrender.com/auth/signup', {
+                const response = await fetch('https://audiotranscriber-skor.onrender.com/api/auth/signup', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -132,7 +132,7 @@
         });
 
         googleSignupBtn.addEventListener('click', () => {
-            window.location.href = 'https://audiotranscriber-skor.onrender.com/auth/google-login';
+            window.location.href = 'https://audiotranscriber-skor.onrender.com/api/auth/google-login';
         });
     </script>
 </body>
