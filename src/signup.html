@@ -98,28 +98,36 @@
             }
 
             try {
+                console.log('Attempting signup with:', { name, email });
                 const response = await fetch('https://audiotranscriber-skor.onrender.com/auth/signup', {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
                     },
                     body: JSON.stringify({ name, email, password })
                 });
 
+                console.log('Signup response status:', response.status);
                 const data = await response.json();
+                console.log('Signup response data:', data);
 
                 if (response.ok) {
                     window.location.href = `verify.html?email=${encodeURIComponent(email)}`;
                 } else {
                     if (data.field) {
                         showError(document.getElementById(`${data.field}Error`), data.message);
+                    } else if (data.detail) {
+                        showError(formError, data.detail);
+                    } else if (data.message) {
+                        showError(formError, data.message);
                     } else {
-                        showError(formError, data.message || 'Signup failed. Please try again.');
+                        showError(formError, `Signup failed (Status: ${response.status}). Please try again.`);
                     }
                 }
             } catch (error) {
-                showError(formError, 'An error occurred. Please try again later.');
                 console.error('Signup error:', error);
+                showError(formError, 'An error occurred. Please try again later.');
             }
         });
 
