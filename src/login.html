@@ -72,7 +72,7 @@
             const password = document.getElementById('password').value;
 
             try {
-                const res = await fetch('https://audiotranscriber-skor.onrender.com/api/auth/email-login', {
+                const res = await fetch('https://audiotranscriber-skor.onrender.com/auth/email-login', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email, password }),
@@ -101,7 +101,7 @@
         });
 
         googleLoginBtn.addEventListener('click', () => {
-            window.location.href = 'https://audiotranscriber-skor.onrender.com/api/auth/google-login';
+            window.location.href = 'https://audiotranscriber-skor.onrender.com/auth/google-login';
         });
     </script>
 </body>
