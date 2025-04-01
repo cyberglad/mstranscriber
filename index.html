@@ -4,59 +4,220 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Audio Transcriber</title>
+  <link rel="stylesheet" href="src/styles/auth.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
   <style>
-    body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
-    button { padding: 10px 20px; cursor: pointer; }
-    .logout-btn { background-color: crimson; color: white; float: right; }
+    .app-container {
+      max-width: 800px;
+      margin: 2rem auto;
+      padding: 2rem;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .app-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+    }
+
+    .app-header h1 {
+      color: var(--secondary-color);
+      margin: 0;
+    }
+
+    .logout-btn {
+      background-color: var(--error-color);
+      color: white;
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: background-color 0.3s ease;
+    }
+
+    .logout-btn:hover {
+      background-color: #c0392b;
+    }
+
+    .upload-section {
+      text-align: center;
+      padding: 2rem;
+      border: 2px dashed #ddd;
+      border-radius: 10px;
+      margin-bottom: 2rem;
+      transition: border-color 0.3s ease;
+    }
+
+    .upload-section:hover {
+      border-color: var(--primary-color);
+    }
+
+    .upload-section i {
+      font-size: 3rem;
+      color: var(--primary-color);
+      margin-bottom: 1rem;
+    }
+
+    .file-input-wrapper {
+      margin: 1rem 0;
+    }
+
+    .file-input-wrapper input[type="file"] {
+      display: none;
+    }
+
+    .file-input-label {
+      display: inline-block;
+      padding: 0.8rem 1.5rem;
+      background-color: var(--primary-color);
+      color: white;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .file-input-label:hover {
+      background-color: #357abd;
+    }
+
+    .selected-file {
+      margin-top: 1rem;
+      color: #666;
+    }
+
+    .transcription-section {
+      margin-top: 2rem;
+      padding: 1rem;
+      background-color: #f8f9fa;
+      border-radius: 5px;
+      min-height: 100px;
+    }
+
+    .transcription-section h2 {
+      color: var(--secondary-color);
+      margin-bottom: 1rem;
+    }
+
+    .loading {
+      display: none;
+      text-align: center;
+      margin: 1rem 0;
+    }
+
+    .loading i {
+      color: var(--primary-color);
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
   </style>
 </head>
 <body>
-  <button class="logout-btn" onclick="logout()">Logout</button>
-  <h1>Audio Transcriber</h1>
+  <div class="app-container">
+    <div class="app-header">
+      <h1>Audio Transcriber</h1>
+      <button class="logout-btn" onclick="logout()">
+        <i class="fas fa-sign-out-alt"></i> Logout
+      </button>
+    </div>
 
-  <form id="uploadForm">
-    <input type="file" id="audioFile" accept="audio/*" />
-    <button type="submit">Transcribe</button>
-  </form>
+    <div class="upload-section">
+      <i class="fas fa-cloud-upload-alt"></i>
+      <h2>Upload Audio File</h2>
+      <form id="uploadForm">
+        <div class="file-input-wrapper">
+          <input type="file" id="audioFile" accept="audio/*" />
+          <label for="audioFile" class="file-input-label">
+            <i class="fas fa-file-audio"></i> Choose Audio File
+          </label>
+          <div class="selected-file" id="selectedFile"></div>
+        </div>
+        <button type="submit" class="btn btn-primary">
+          <i class="fas fa-microphone"></i> Transcribe
+        </button>
+      </form>
+    </div>
 
-  <div id="error" style="color:red;"></div>
-  <div id="transcription"></div>
+    <div class="loading" id="loading">
+      <i class="fas fa-spinner fa-2x"></i>
+      <p>Transcribing your audio...</p>
+    </div>
+
+    <div class="transcription-section">
+      <h2>Transcription Result</h2>
+      <div id="error" class="error-message"></div>
+      <div id="transcription"></div>
+    </div>
+  </div>
 
   <script>
     const token = localStorage.getItem('token');
     if (!token) {
-      window.location.href = 'login.html';
+      window.location.href = 'src/login.html';
     }
 
-    document.getElementById('uploadForm').addEventListener('submit', async (e) => {
+    const audioFile = document.getElementById('audioFile');
+    const selectedFile = document.getElementById('selectedFile');
+    const uploadForm = document.getElementById('uploadForm');
+    const loading = document.getElementById('loading');
+    const error = document.getElementById('error');
+    const transcription = document.getElementById('transcription');
+
+    audioFile.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        selectedFile.textContent = `Selected: ${file.name}`;
+        error.textContent = '';
+      }
+    });
+
+    uploadForm.addEventListener('submit', async (e) => {
       e.preventDefault();
-      const file = document.getElementById('audioFile').files[0];
+      const file = audioFile.files[0];
+      
       if (!file) {
-        document.getElementById('error').textContent = 'Please select an audio file';
+        error.textContent = 'Please select an audio file';
         return;
       }
+
+      loading.style.display = 'block';
+      error.textContent = '';
+      transcription.textContent = '';
 
       const formData = new FormData();
       formData.append('file', file);
 
       try {
-        const res = await fetch('https://audiotranscriber-skor.onrender.com/upload', {
+        const response = await fetch('https://audiotranscriber-skor.onrender.com/upload', {
           method: 'POST',
           headers: { Authorization: `Bearer ${token}` },
           body: formData
         });
 
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.detail || 'Upload failed');
-        document.getElementById('transcription').textContent = data.transcription || "No transcription returned.";
+        const data = await response.json();
+        
+        if (!response.ok) {
+          throw new Error(data.detail || 'Upload failed');
+        }
+
+        transcription.textContent = data.transcription || "No transcription returned.";
       } catch (err) {
-        document.getElementById('error').textContent = err.message;
+        error.textContent = err.message;
+      } finally {
+        loading.style.display = 'none';
       }
     });
 
     function logout() {
       localStorage.removeItem('token');
-      window.location.href = 'login.html';
+      window.location.href = 'src/login.html';
     }
   </script>
 </body>

@@ -1,0 +1,181 @@
+:root {
+  --primary-color: #4a90e2;
+  --secondary-color: #2c3e50;
+  --success-color: #2ecc71;
+  --error-color: #e74c3c;
+  --background-color: #f5f6fa;
+  --text-color: #2c3e50;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  line-height: 1.6;
+}
+
+.container {
+  max-width: 400px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+}
+
+.auth-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.auth-header h1 {
+  color: var(--secondary-color);
+  margin-bottom: 0.5rem;
+}
+
+.auth-header p {
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: var(--secondary-color);
+  font-weight: 500;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 0.8rem;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+}
+
+.btn {
+  width: 100%;
+  padding: 0.8rem;
+  border: none;
+  border-radius: 5px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.btn-primary {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+.btn-primary:hover {
+  background-color: #357abd;
+}
+
+.btn-google {
+  background-color: #fff;
+  color: #757575;
+  border: 1px solid #ddd;
+  margin-top: 1rem;
+}
+
+.btn-google:hover {
+  background-color: #f5f5f5;
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  margin: 1.5rem 0;
+}
+
+.divider::before,
+.divider::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid #ddd;
+}
+
+.divider span {
+  padding: 0 1rem;
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.auth-footer {
+  text-align: center;
+  margin-top: 1.5rem;
+  font-size: 0.9rem;
+}
+
+.auth-footer a {
+  color: var(--primary-color);
+  text-decoration: none;
+}
+
+.auth-footer a:hover {
+  text-decoration: underline;
+}
+
+.error-message {
+  color: var(--error-color);
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+  display: none;
+}
+
+.success-message {
+  color: var(--success-color);
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+  display: none;
+}
+
+.verification-container {
+  text-align: center;
+  padding: 2rem;
+}
+
+.verification-icon {
+  font-size: 4rem;
+  color: var(--success-color);
+  margin-bottom: 1rem;
+}
+
+.verification-message {
+  margin-bottom: 2rem;
+}
+
+.resend-verification {
+  margin-top: 1rem;
+}
+
+.resend-verification button {
+  background: none;
+  border: none;
+  color: var(--primary-color);
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.resend-verification button:hover {
+  text-decoration: underline;
+} 

@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - Audio Transcriber</title>
+    <link rel="stylesheet" href="styles/auth.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <div class="auth-header">
+            <h1>Create Account</h1>
+            <p>Join Audio Transcriber to start transcribing your audio files</p>
+        </div>
+
+        <form id="signupForm">
+            <div class="form-group">
+                <label for="name">Full Name</label>
+                <input type="text" id="name" name="name" required>
+                <div class="error-message" id="nameError"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" required>
+                <div class="error-message" id="emailError"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required>
+                <div class="error-message" id="passwordError"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="confirmPassword">Confirm Password</label>
+                <input type="password" id="confirmPassword" name="confirmPassword" required>
+                <div class="error-message" id="confirmPasswordError"></div>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Create Account</button>
+            <div class="error-message" id="formError"></div>
+        </form>
+
+        <div class="divider">
+            <span>or</span>
+        </div>
+
+        <button class="btn btn-google" id="googleSignup">
+            <i class="fab fa-google"></i> Continue with Google
+        </button>
+
+        <div class="auth-footer">
+            <p>Already have an account? <a href="login.html">Sign in</a></p>
+        </div>
+    </div>
+
+    <script>
+        const signupForm = document.getElementById('signupForm');
+        const googleSignupBtn = document.getElementById('googleSignup');
+        const formError = document.getElementById('formError');
+
+        function showError(element, message) {
+            element.textContent = message;
+            element.style.display = 'block';
+        }
+
+        function hideError(element) {
+            element.textContent = '';
+            element.style.display = 'none';
+        }
+
+        function validatePassword(password, confirmPassword) {
+            if (password !== confirmPassword) {
+                showError(document.getElementById('confirmPasswordError'), 'Passwords do not match');
+                return false;
+            }
+            if (password.length < 8) {
+                showError(document.getElementById('passwordError'), 'Password must be at least 8 characters long');
+                return false;
+            }
+            return true;
+        }
+
+        signupForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            hideError(formError);
+            document.querySelectorAll('.error-message').forEach(hideError);
+
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+
+            if (!validatePassword(password, confirmPassword)) {
+                return;
+            }
+
+            try {
+                const response = await fetch('https://audiotranscriber-skor.onrender.com/auth/signup', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ name, email, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    window.location.href = `verify.html?email=${encodeURIComponent(email)}`;
+                } else {
+                    if (data.field) {
+                        showError(document.getElementById(`${data.field}Error`), data.message);
+                    } else {
+                        showError(formError, data.message || 'Signup failed. Please try again.');
+                    }
+                }
+            } catch (error) {
+                showError(formError, 'An error occurred. Please try again later.');
+                console.error('Signup error:', error);
+            }
+        });
+
+        googleSignupBtn.addEventListener('click', () => {
+            window.location.href = 'https://audiotranscriber-skor.onrender.com/auth/google-login';
+        });
+    </script>
+</body>
+</html> 

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Audio Transcriber</title>
+    <link rel="stylesheet" href="styles/auth.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <div class="auth-header">
+            <h1>Welcome Back</h1>
+            <p>Sign in to continue to Audio Transcriber</p>
+        </div>
+
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" required>
+                <div class="error-message" id="emailError"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required>
+                <div class="error-message" id="passwordError"></div>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Sign In</button>
+            <div class="error-message" id="formError"></div>
+        </form>
+
+        <div class="divider">
+            <span>or</span>
+        </div>
+
+        <button class="btn btn-google" id="googleLogin">
+            <i class="fab fa-google"></i> Continue with Google
+        </button>
+
+        <div class="auth-footer">
+            <p>Don't have an account? <a href="signup.html">Sign up</a></p>
+            <p><a href="forgot-password.html">Forgot your password?</a></p>
+        </div>
+    </div>
+
+    <script>
+        const loginForm = document.getElementById('loginForm');
+        const googleLoginBtn = document.getElementById('googleLogin');
+        const formError = document.getElementById('formError');
+        const emailError = document.getElementById('emailError');
+        const passwordError = document.getElementById('passwordError');
+
+        function showError(element, message) {
+            element.textContent = message;
+            element.style.display = 'block';
+        }
+
+        function hideError(element) {
+            element.textContent = '';
+            element.style.display = 'none';
+        }
+
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            hideError(formError);
+            hideError(emailError);
+            hideError(passwordError);
+
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            try {
+                const response = await fetch('https://audiotranscriber-skor.onrender.com/auth/email-login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    if (data.token) {
+                        localStorage.setItem('token', data.token);
+                        window.location.href = 'index.html';
+                    } else if (data.requiresVerification) {
+                        window.location.href = `verify.html?email=${encodeURIComponent(email)}`;
+                    }
+                } else {
+                    if (data.field) {
+                        showError(document.getElementById(`${data.field}Error`), data.message);
+                    } else {
+                        showError(formError, data.message || 'Login failed. Please try again.');
+                    }
+                }
+            } catch (error) {
+                showError(formError, 'An error occurred. Please try again later.');
+                console.error('Login error:', error);
+            }
+        });
+
+        googleLoginBtn.addEventListener('click', () => {
+            window.location.href = 'https://audiotranscriber-skor.onrender.com/auth/google-login';
+        });
+    </script>
+</body>
+</html> 
