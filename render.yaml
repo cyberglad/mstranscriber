@@ -27,8 +27,9 @@ services:
     name: audio-to-text-frontend
     env: node
     plan: free
-    buildCommand: cd frontend && npm install && npm run build
-    startCommand: cd frontend && serve -s build
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    startCommand: serve -s build
     envVars:
       - key: REACT_APP_API_URL
         sync: false 
