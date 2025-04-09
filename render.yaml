@@ -1,0 +1,40 @@
+services:
+  - type: web
+    name: audio-to-text-backend
+    env: python
+    buildCommand: cd backend && pip install -r requirements.txt
+    startCommand: cd backend && uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: audio-to-text-db
+          property: connectionString
+      - key: SECRET_KEY
+        generateValue: true
+      - key: EMAIL_VERIFICATION_SECRET
+        generateValue: true
+      - key: SMTP_HOST
+        sync: false
+      - key: SMTP_PORT
+        sync: false
+      - key: SMTP_USERNAME
+        sync: false
+      - key: SMTP_PASSWORD
+        sync: false
+      - key: FRONTEND_URL
+        sync: false
+
+  - type: web
+    name: audio-to-text-frontend
+    env: node
+    buildCommand: cd frontend && npm install && npm run build
+    startCommand: cd frontend && serve -s build
+    envVars:
+      - key: REACT_APP_API_URL
+        sync: false
+
+databases:
+  - name: audio-to-text-db
+    databaseName: audio_to_text
+    user: audio_to_text_user
+    plan: free 
