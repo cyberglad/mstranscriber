@@ -28,8 +28,8 @@ services:
     env: node
     plan: free
     rootDir: frontend
-    buildCommand: npm install && npm run build
-    startCommand: serve -s build
+    buildCommand: cd frontend && npm install && npm run build
+    startCommand: cd frontend && npm run serve
     envVars:
       - key: REACT_APP_API_URL
-        sync: false 
+        value: https://audio-to-text-backend.onrender.com 
