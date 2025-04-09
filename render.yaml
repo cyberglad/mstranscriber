@@ -31,10 +31,4 @@ services:
     startCommand: cd frontend && serve -s build
     envVars:
       - key: REACT_APP_API_URL
-        sync: false
-
-databases:
-  - name: audio-to-text-db
-    databaseName: audio_to_text
-    user: audio_to_text_user
-    plan: free 
+        sync: false 
