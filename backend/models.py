@@ -1,16 +1,17 @@
-from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, DateTime
+from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, DateTime, Text
 from sqlalchemy.orm import relationship
-from datetime import datetime
+from sqlalchemy.sql import func
 from database import Base
 
 class User(Base):
     __tablename__ = "users"
 
     id = Column(Integer, primary_key=True, index=True)
-    email = Column(String, unique=True, index=True)
-    hashed_password = Column(String)
-    is_verified = Column(Boolean, default=False)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    email = Column(Text, unique=True, nullable=False)
+    plan = Column(Text, default='free')  # Either 'free' or 'premium'
+    usage_today = Column(Integer, default=0)  # Minutes transcribed today
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
     
     transcriptions = relationship("Transcription", back_populates="user")
 
