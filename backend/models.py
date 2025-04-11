@@ -1,6 +1,7 @@
 from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, DateTime, Text
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
+from datetime import datetime
 from database import Base
 
 class User(Base):
@@ -22,6 +23,6 @@ class Transcription(Base):
     user_id = Column(Integer, ForeignKey("users.id"))
     filename = Column(String)
     text = Column(String)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
     
     user = relationship("User", back_populates="transcriptions") 
